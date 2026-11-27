@@ -1,0 +1,139 @@
+
+# =========================================================
+# UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA - UNAD
+# Curso: Lenguajes Interpretados
+# Grupo: 16
+# Tarea 3: Mapeo de Datasheets a Diccionarios
+# Autora: Jakeline Alzate Gómez
+# =========================================================
+
+
+# ---------------------------------------------------------
+# PRESENTACIÓN DEL PROGRAMA
+# ---------------------------------------------------------
+
+print("=" * 55)
+print("       MAPEO DE DATASHEETS A DICCIONARIOS")
+print("                 SENSOR MPU6050")
+print("=" * 55)
+print("Autora: Jakeline Alzate Gómez")
+print("Curso: Lenguajes Interpretados")
+print("Grupo: 16")
+print("=" * 55)
+print()
+
+
+# ---------------------------------------------------------
+# DICCIONARIO DE REGISTROS DEL SENSOR MPU6050
+# ---------------------------------------------------------
+
+registro_mpu = {
+    "0x3B": {
+        "register_name": "ACCEL_XOUT_H",
+        "bit_mask": 0xFF,
+        "sampling_rate": 1000
+    },
+    "0x3D": {
+        "register_name": "ACCEL_YOUT_H",
+        "bit_mask": 0xFF,
+        "sampling_rate": 1000
+    },
+    "0x6B": {
+        "register_name": "PWR_MGMT_1",
+        "bit_mask": 0xFF,
+        "sampling_rate": 1000
+    }
+}
+
+
+# ---------------------------------------------------------
+# CONSULTA DE REGISTROS
+# ---------------------------------------------------------
+
+print("Consulta de registros del sensor MPU6050")
+
+
+# Establecer un límite máximo de consultas.
+MAX_CONSULTAS = 10
+consultas_realizadas = 0
+
+
+while consultas_realizadas < MAX_CONSULTAS:
+
+    consultas_realizadas += 1
+
+    print(
+        f"\nConsulta {consultas_realizadas} "
+        f"de {MAX_CONSULTAS}"
+    )
+
+    consulta = input(
+        "Ingrese la dirección (ej. 0x3B) "
+        "o el nombre del registro "
+        "(escriba salir para terminar): "
+    ).strip()
+
+
+    # Permitir terminar el programa.
+    if consulta.lower() == "salir":
+        print("Fin de las consultas.")
+        break
+
+
+    # Validar que la entrada no esté vacía.
+    if consulta == "":
+        print("Error: debe ingresar una dirección o un nombre.")
+        continue
+
+
+    # Buscar primero por dirección hexadecimal.
+    direccion_consulta = consulta.upper().replace(
+        "0X", "0x"
+    )
+
+    datos = registro_mpu.get(direccion_consulta)
+
+
+    # Si no existe la dirección, buscar por nombre.
+    if datos is None:
+
+        contador = 0
+        limite = len(registro_mpu)
+
+        for direccion, informacion in registro_mpu.items():
+
+            contador += 1
+
+            if informacion.get(
+                "register_name", ""
+            ).upper() == consulta.upper():
+
+                datos = informacion
+                break
+
+
+            # Control numérico del ciclo de búsqueda.
+            if contador >= limite:
+                break
+
+
+    # Mostrar el resultado de la consulta.
+    if datos is not None:
+
+        print("\nRegistro encontrado:")
+        print(datos)
+
+    else:
+
+        print("\nError: no se encontró el registro solicitado.")
+
+
+# ---------------------------------------------------------
+# FINALIZACIÓN DEL PROGRAMA
+# ---------------------------------------------------------
+
+if consultas_realizadas >= MAX_CONSULTAS:
+    print("\nSe alcanzó el límite de consultas.")
+    print("Programa finalizado por seguridad.")
+
+print("\nFin del programa.")
